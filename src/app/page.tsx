@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="h-screen w-full bg-shade-5
     py-8 px-12 flex items-center justify-center">
-      <div className="h-full w-full max-w-[1200px]">
+      <div className="h-full w-full max-w-[1400px]">
         <nav className="flex justify-between items-center">
           <Image src="/main-logo.png" 
             alt="logo" width={400} height={400}/>

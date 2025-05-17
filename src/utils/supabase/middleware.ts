@@ -1,3 +1,5 @@
+'use server'
+
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -38,23 +40,28 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   
-  if (
-    user
-  ) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/home'
-    return NextResponse.redirect(url)
-  }
-  else if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/signup') && 
-    !request.nextUrl.pathname.startsWith('/')
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
+  if (user) {
+    // If user is logged in and tries to access auth pages, redirect to home
+    if (
+      request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname.startsWith('/login') ||
+      request.nextUrl.pathname.startsWith('/signup')
+    ) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/home'
+      return NextResponse.redirect(url)
+    }
+  } else {
+    // If user is not logged in, only allow access to auth pages
+    if (
+      !request.nextUrl.pathname.startsWith('/login') &&
+      !request.nextUrl.pathname.startsWith('/signup') &&
+      request.nextUrl.pathname !== '/'
+    ) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
