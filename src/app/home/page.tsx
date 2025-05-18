@@ -10,9 +10,19 @@ import SelectStock from '@/components/selectStock'
 import { User } from '@supabase/supabase-js'
 import ShowWatchList from '@/components/showWatchList'
 import { getWatchlist } from './actions'
+import { fetchNews } from './actions'
 
 function page() {
   const [watchlist, setWatchlist] = useState<any[]>([])
+
+  async function getNews() {
+    try {
+      const news = await fetchNews(watchlist[0]?.Symbol)
+      console.log(news)
+    } catch (error) {
+      console.error("Error fetching news:", error)
+    }
+  }
 
   useEffect(() => {
     const fetchWatchlist = async () => {
@@ -51,6 +61,15 @@ function page() {
         <SelectStock />
 
         <ShowWatchList stocks={watchlist} />
+
+      <Button 
+        onClick={getNews} 
+        className="mt-4 w-32 h-10 font-medium bg-shade-4"
+      >
+        Get News
+      </Button>
+
+      
       </div>
     </div>
   )

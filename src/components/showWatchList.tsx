@@ -25,7 +25,7 @@ function ShowWatchList({stocks}: {stocks: any[]}) {
         </TableHeader>
         <TableBody>
             {stocks.map((stock) => (
-                <TableRow>
+                <TableRow key={stock.Symbol}>
                 <TableCell className="font-medium text-shade-5 text-lg
                 font-inter-thin">{stock.Symbol}</TableCell>
                 {/* <TableCell>Paid</TableCell>
