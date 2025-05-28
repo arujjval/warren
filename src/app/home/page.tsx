@@ -61,33 +61,37 @@ function page() {
   }, [])
 
   return (
-    <div className="h-screen w-full bg-shade-1
-    py-8 px-12 flex items-center justify-center">
-      <div className="h-full w-full max-w-[1400px] flex flex-col gap-5">
-        <nav className="flex justify-between items-center">
+    <div className="min-h-screen w-full bg-shade-1
+    py-4 sm:py-6 md:py-8 px-4 sm:px-8 md:px-12">
+      <div className="h-full w-full max-w-[1200px] flex flex-col gap-3 
+        sm:gap-4 md:gap-5 my-10">
+        <nav className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
           <Image src="/main-logo.png" 
             alt="logo" width={400} height={400}
+            className="w-[400px] h-auto"
             style={{
               filter: 'brightness(0) invert(0.7)'
             }}/>
 
-          <div className="flex items-center gap-4">
-            <div className="flex text-shade-5 flex-col text-lg font-bold">
-              <div className='text-right font-light'>Welcome</div>
-              <div className='text-right'>
+          <div className="flex items-center gap-4 
+            sm:justify-between md:justify-end w-full">
+            <div className="text-shade-5 text-lg font-bold">
+              <div className='font-light'>Welcome </div>
+              <div className='truncate max-w-[120px] sm:max-w-full inline-block align-bottom'>
                 {user?.user_metadata?.display_name}
               </div>
             </div>
-            <div className="flex gap-4">
-              <SignOutDialog />
-            </div>
+            <SignOutDialog />
           </div>
         </nav>
-        <div className='w-full border-2 border-shade-5 mb-3'></div>
+        <div className='w-full border-2 border-shade-5 mb-2 sm:mb-3'></div>
         <ShowWatchList stocks={watchlist} />
         <SelectStock />
 
-        <Button onClick={sendAllNotifications}>
+        <Button 
+          onClick={sendAllNotifications}
+          className="w-full h-10 sm:h-12 md:h-14 text-sm sm:text-base md:text-lg"
+        >
           Send
         </Button>
 
