@@ -1,5 +1,6 @@
 import { getUser } from '@/utils/auth/getUser'
 import { createClient } from '@/utils/supabase/client'
+import { redirect } from 'next/navigation'
 
 const supabase = createClient()
 
@@ -16,6 +17,62 @@ export async function searchStocks(stock: string) {
   }
 
   return data
+}
+
+export async function signOut() {
+  try {
+    const supabase = createClient()
+    const user = await getUser();
+
+    // if (user) {
+    //   const fcmToken = localStorage.getItem('fcmToken');
+
+    //   if (fcmToken) {
+    //     const { data: tokenData, error: fetchError } = await supabase
+    //       .from('user_fcm_tokens')
+    //       .select('fcm_tokens')
+    //       .eq('user_id', user.id)
+    //       .single();
+
+        
+
+    //     if (fetchError) {
+    //       console.error('Error fetching FCM tokens:', fetchError);
+    //     } else {
+    //       const updatedTokens = tokenData.fcm_tokens.filter((token: string) => token !== fcmToken);
+
+    //       const { error } = await supabase
+    //         .from('user_fcm_tokens')
+    //         .update({
+    //           fcm_tokens: updatedTokens
+    //         })
+    //         .eq('user_id', user.id);
+
+    //       if (error) {
+    //         console.error('Error removing FCM token:', error);
+    //       }
+
+    //       localStorage.removeItem('fcmToken');
+    //     }
+    //   }
+    // }
+
+    const { error: signOutError } = await supabase.auth.signOut();
+    
+    if (signOutError) {
+      console.error('Error signing out:', signOutError);
+      throw signOutError;
+    }
+
+    console.log('signed out')
+  } catch (error) {
+    console.error('Error during sign out:', error);
+    throw error;
+  }
+}
+
+export async function removeStock(stock: string) {
+
 }
 
 export async function addStock(stock: string) {
@@ -121,3 +178,52 @@ export async function fetchNews(stock: string) {
       throw error;
   }
 };
+
+export async function sendNotification() {
+  try {
+    const response = await fetch('/api/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    throw error;
+  }
+};
+
+export async function addUserFcmToken(token: string) {
+  const user = await getUser();
+
+  if (!user) {
+    console.error('No user logged in')
+    return
+  }
+
+  const { data: existingTokens } = await supabase
+    .from('user_fcm_tokens')
+    .select('fcm_tokens')
+    .eq('user_id', user.id)
+    .single()
+
+  if (existingTokens) {
+    if (!existingTokens.fcm_tokens.includes(token)) {
+      const { error } = await supabase
+        .from('user_fcm_tokens')
+        .update({ 
+          fcm_tokens: [...existingTokens.fcm_tokens, token]
+        })
+        .eq('user_id', user.id)
+    }
+  } else {
+    const { error } = await supabase
+      .from('user_fcm_tokens')
+      .insert({
+        user_id: user.id,
+        fcm_tokens: [token]
+      })
+  }
+}
